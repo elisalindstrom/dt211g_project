@@ -1,12 +1,53 @@
 <!doctype html>
-<html lang="sv">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dt211g_project</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextTBR</title>
+  <meta name="description" content="Track upcoming book releases from your favorite authors.">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/src/css/main.scss">
+</head>
+
+<body>
+  <div id="app">
+    <header>
+      <a href="index.html" class="logo">NextTBR</a>
+    </header>
+
+    <main>
+      <div class="search-section">
+        <form>
+          <input id="input" type="text">
+          <button id="submit" type="submit">Search</button>
+        </form>
+      </div>
+
+      <section class="author-section">
+        <h1>Author profile</h1>
+        <div id="author-info">
+        </div>
+
+        <div class="upcoming-books">
+          <h2>Upcoming releases</h2>
+          <div id="upcoming-book-container">
+          </div>
+        </div>
+      </section>
+
+      <section class="book-section">
+        <h2>Published books</h2>
+        <div id="published-book-container">
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>NextTBR</p>
+    </footer>
+  </div>
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+
 </html>
