@@ -8,38 +8,48 @@
   <meta name="description" content="Track upcoming book releases from your favorite authors.">
   <!-- Stylesheet -->
   <link rel="stylesheet" href="/src/css/main.scss">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
 </head>
 
 <body>
-  <div id="app">
+  <div class="container">
     <header>
       <a href="index.html" class="logo">NextTBR</a>
     </header>
 
     <main>
-      <div class="search-section">
-        <form>
-          <input id="input" type="text">
-          <button id="submit" type="submit">Search</button>
-        </form>
-      </div>
+      <section class="main-content">
 
-      <section class="author-section">
-        <h1>Author profile</h1>
-        <div id="author-info">
+        <div class="search-section">
+          <form autocomplete="off">
+            <input id="input" type="text" placeholder="Search author...">
+            <button id="submit" class="btn" type="submit">Search</button>
+          </form>
         </div>
 
-        <div class="upcoming-books">
-          <h2>Upcoming releases</h2>
-          <div id="upcoming-book-container">
+        <div class="author-section">
+          <h1>Author profile</h1>
+          <div id="author-info-card">
           </div>
         </div>
-      </section>
 
-      <section class="book-section">
-        <h2>Published books</h2>
-        <div id="published-book-container">
+        <div class="card-section">
+          <h2>Upcoming releases</h2>
+          <div id="upcoming-book-card">
+          </div>
         </div>
+
+        <div class="card-section">
+          <h2>Published books</h2>
+          <div id="published-book-card">
+          </div>
+        </div>
+
       </section>
     </main>
 
