@@ -9,6 +9,7 @@
 header {
     @include base.flex-center;
     background-color: base.$secondary-color;
+    color: #FFFFFF;
 
     .logo {
         color: #ebcedb;
@@ -16,6 +17,7 @@ header {
         font-weight: 800;
         text-decoration: none;
         padding: 0.5rem 1rem;
+        font-family: "Roboto";
     }
 }
 
@@ -59,7 +61,7 @@ header {
 
 footer {
     @include base.flex-center;
-    background-color: base.$secondary-color;
+    background-color: #ebcedb;
     color: #FFFFFF;
     padding: 3rem 1rem;
 }
