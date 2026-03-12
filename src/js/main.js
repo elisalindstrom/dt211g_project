@@ -64,8 +64,7 @@ function displayBooks(books) {
     publishedBooks.innerHTML = "";
 
     const sectionHeader = document.createElement("h2")
-    const headerTitle = document.createTextNode("Published books");
-    sectionHeader.appendChild(headerTitle);
+    sectionHeader.textContent = `Published books`;
 
     publishedBooks.appendChild(sectionHeader);
 
@@ -73,16 +72,24 @@ function displayBooks(books) {
         const bookCard = document.createElement("div");
         bookCard.classList.add("book-card");
 
+        const cover = book.volumeInfo.imageLinks?.thumbnail;
+        const bookImg = document.createElement("img")
+
+        const bookInfo = document.createElement("div");
+        bookInfo.classList.add("book-info");
+
         const title = document.createElement("h3")
-        const titleText = document.createTextNode(book.volumeInfo.title);
-        title.appendChild(titleText);
+        title.textContent = book.volumeInfo.title;
 
-        const date = document.createElement("h4")
-        const datePublished = document.createTextNode(book.volumeInfo.publishedDate);
-        date.appendChild(datePublished);
+        const date = document.createElement("h4");
+        date.textContent = `Published: ${book.volumeInfo.publishedDate}`;
 
-        publishedBooks.appendChild(bookCard);
-        bookCard.appendChild(title);
-        title.appendChild(date);
+        if (cover) {
+            bookImg.src = cover;
+        }
+
+        sectionHeader.appendChild(bookCard);
+        bookCard.append(bookImg, bookInfo);
+        bookInfo.append(title, date);
     });
 }

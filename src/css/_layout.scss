@@ -16,7 +16,7 @@ header {
         font-size: 34px;
         font-weight: 800;
         text-decoration: none;
-        padding: 0.5rem 1rem;
+        padding: 1rem;
         font-family: "Roboto";
     }
 }
@@ -56,13 +56,37 @@ header {
 #author-info-card {
     @include base.card;
     margin-top: 1.5rem;
+    padding: 1rem
 }
 
 .book-card {
     @include base.card;
+    display: flex;
+    gap: 1rem;
     margin-top: 1rem;
+
+    img {
+        width: 100px;
+        height: 100%;
+        max-width: 100%;
+        border-radius: 10px;
+    }
+
+    .book-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
 }
 
 .hidden {
     display: none;
+}
+
+@media (max-width: 600px) {
+    .book-card {
+        img {
+            width: 80px;
+        }
+    }
 }
