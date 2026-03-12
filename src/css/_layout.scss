@@ -49,15 +49,18 @@ header {
 .card-section {
     width: 100%;
     max-width: 500px;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
-#author-info-card,
-#upcoming-book-card,
-#published-book-card {
+#author-info-card {
     @include base.card;
-    margin-top: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.book-card {
+    @include base.card;
+    margin-top: 1rem;
 }
 
 .hidden {
