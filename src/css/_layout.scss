@@ -29,6 +29,7 @@ header {
 
 .search-section {
     @include base.card;
+    margin-top: 2rem;
 
     form {
         display: flex;
@@ -52,16 +53,13 @@ header {
     margin-bottom: 1rem;
 }
 
-.author-info-card,
-.upcoming-book-card,
-.published-book-card {
+#author-info-card,
+#upcoming-book-card,
+#published-book-card {
     @include base.card;
     margin-top: 0.5rem;
 }
 
-footer {
-    @include base.flex-center;
-    background-color: #ebcedb;
-    color: #FFFFFF;
-    padding: 3rem 1rem;
+.hidden {
+    display: none;
 }

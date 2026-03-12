@@ -20,11 +20,13 @@
   <div class="container">
     <header>
       <a href="index.html" class="logo">NextTBR</a>
-      <p>Find your next To Be Read - Track you favorite authors upcoming book releases</p>
     </header>
 
     <main>
-      <div class="main-content">
+      <section class="main-content">
+
+        <h1>Find your next To Be Read</h1>
+        <p>Track your favorite authors upcoming book releases</p>
 
         <div class="search-section">
           <form autocomplete="off">
@@ -33,30 +35,26 @@
           </form>
         </div>
 
-        <section class="author-section">
-          <h1>Author profile</h1>
-          <div id="author-info-card">
+        <div class="author-section">
+          <!-- Author profile -->
+          <div id="author-info-card" class="hidden">
           </div>
-        </section>
+        </div>
 
-        <section class="card-section">
-          <h2>Upcoming releases</h2>
-          <div id="upcoming-book-card">
+        <div class="card-section">
+          <!-- Upcoming releases -->
+          <div id="upcoming-book-card" class="hidden">
           </div>
-        </section>
+        </div>
 
-        <section class="card-section">
-          <h2>Published books</h2>
-          <div id="published-book-card">
+        <div class="card-section">
+          <!-- Published books -->
+          <div id="published-book-card" class="hidden">
           </div>
-        </section>
+        </div>
 
-      </div>
+      </section>
     </main>
-
-    <footer>
-      <p>NextTBR</p>
-    </footer>
   </div>
   <script type="module" src="/src/js/main.js"></script>
 </body>
