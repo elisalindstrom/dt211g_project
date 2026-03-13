@@ -12,7 +12,7 @@ function searchAuthor(event) {
     const authorValue = authorInput.value.trim();
 
     if (authorValue === "") {
-        console.log("Test");
+        console.log("Lägg in meddelande"); // Ta bort
         return;
     }
 
@@ -26,12 +26,25 @@ async function fetchAuthor(authorValue) {
         const response = await fetch(`https://openlibrary.org/search/authors.json?q=${authorValue}`);
         const author = await response.json();
 
-        displayAuthor(author);
-        console.table(author.docs[0]);
-
+        if (author.docs.length === 0) {
+            displayAuthorNotFound();
+            return;
+        }
+        displayAuthor(author.docs[0]);
     } catch (error) {
         console.error("Något gick fel" + error);
     }
+}
+
+function displayAuthorNotFound() {
+    const authorProfile = document.querySelector("#author-info-card");
+    authorProfile.classList.remove("hidden");
+    authorProfile.innerHTML = "";
+
+    const authorNameElement = document.createElement("h2");
+    authorNameElement.textContent = `Author not found`;
+
+    authorProfile.appendChild(authorNameElement);
 }
 
 function displayAuthor(author) {
@@ -39,35 +52,36 @@ function displayAuthor(author) {
     authorProfile.classList.remove("hidden");
     authorProfile.innerHTML = "";
 
-    if (author.docs.length > 0) {
-        const authorName = author.docs[0].name;
+    const authorName = author.name;
 
-        const authorNameElement = document.createElement("h2");
-        authorNameElement.textContent = authorName
+    const authorNameElement = document.createElement("h2");
+    authorNameElement.textContent = authorName
+    authorProfile.appendChild(authorNameElement);
 
+    if (author.birth_date) {
         const birthDateElement = document.createElement("p");
-        birthDateElement.textContent = `Born: ${author.docs[0].birth_date}`;
-
-        const topWorkElement = document.createElement("p");
-        topWorkElement.textContent = `Top Work: ${author.docs[0].top_work}`;
-
-        authorProfile.append(authorNameElement, birthDateElement, topWorkElement);
-
-        fetchBooks(authorName);
-    } else {
-        authorProfile.innerHTML = `<h2>Author not found</h2>`;
-
+        birthDateElement.textContent = `Born: ${author.birth_date}`;
+        authorProfile.appendChild(birthDateElement);
     }
+
+    const topWorkElement = document.createElement("p");
+    topWorkElement.textContent = `Top Work: ${author.top_work}`;
+    authorProfile.appendChild(topWorkElement)
+
+    fetchBooks(authorName);
 }
 
 // BÖCKER
 
 async function fetchBooks(authorName) {
     try {
-        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=inauthor:${authorName}`);
+        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=inauthor:${authorName}&maxResults=40`);
         const books = await response.json();
 
-        sortBooks(books.items);
+        if (books.items) {
+            sortBooks(books.items);
+        }
+        console.table(books.items);
     } catch (error) {
         console.error("Något gick fel" + error);
     }
@@ -90,11 +104,14 @@ function sortBooks(books) {
                 publishedBooks.push(book);
             }
         }
-    })
+    });
+
+    // Sortera så senast publicerade böcker visas först
+    publishedBooks.sort((a, b) =>
+        new Date(b.volumeInfo.publishedDate) - new Date(a.volumeInfo.publishedDate));
+
     displayUpcomingBooks(upcomingBooks);
     displayPublishedBooks(publishedBooks);
-
-    console.table(upcomingBooks, publishedBooks);
 }
 
 function displayUpcomingBooks(upcomingBooks) {
