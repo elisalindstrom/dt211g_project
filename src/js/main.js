@@ -54,7 +54,12 @@ function displayAuthor(author) {
 
     const authorName = author.name;
 
-    const authorNameElement = document.createElement("h2");
+    const authorProfileHeader = document.createElement("h2");
+    authorProfileHeader.textContent = `Author Profile`;
+    authorProfile.appendChild(authorProfileHeader);
+
+
+    const authorNameElement = document.createElement("h3");
     authorNameElement.textContent = authorName
     authorProfile.appendChild(authorNameElement);
 
@@ -75,7 +80,7 @@ function displayAuthor(author) {
 
 async function fetchBooks(authorName) {
     try {
-        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=inauthor:${authorName}&maxResults=40`);
+        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=inauthor:${authorName}&maxResults=20`);
         const books = await response.json();
 
         if (books.items) {

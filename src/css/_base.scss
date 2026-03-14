@@ -1,7 +1,7 @@
 $background-color: #fff6f0;
-$secondary-color: #781c3f;
+$secondary-color: #8F3457;
 
-$font-stack: "Raleway", Helvetica, sans-serif;
+$font-stack: "Plus Jakarta Sans", Helvetica, sans-serif;
 
 /* Mixins */
 @mixin flex-center {
@@ -29,13 +29,14 @@ $font-stack: "Raleway", Helvetica, sans-serif;
 
 body {
     background-color: $background-color;
+    color: #000000;
     font-family: $font-stack;
     line-height: 1.5;
     text-align: left;
 }
 
 h1, h2, h3, h4 {
-    font-family: "Roboto";
+    font-family: "Inter Tight", Arial, sans-serif;
 }
 
 h1 {
@@ -45,6 +46,7 @@ h1 {
 
 h2 {
     font-size: 22px;
+    font-weight: 600;
     margin-bottom: 1rem;
 }
 
@@ -62,12 +64,12 @@ h4 {
     border: 1px solid transparent;
     border-radius: 10px;
     cursor: pointer;
-    background-color: #781c3f;
-    color: #ebcedb;
+    background-color: $secondary-color;
+    color: #FFFFFF;
     padding: 0.5rem 1rem;
 
     &:hover {
-        background-color: #ebcedb;
-        color: #781c3f;
+        background-color: $background-color;
+        color: #000000;
     }
 }
