@@ -75,6 +75,11 @@ header {
         height: 100%;
         max-width: 100%;
         border-radius: 10px;
+        transition: transform 0.5s ease;
+
+        &:hover {
+            transform: translateY(-10px);
+        }
     }
 
     .book-info {

@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NextTBR</title>
   <meta name="description" content="Track upcoming book releases from your favorite authors.">
+
+  <!-- Faviconlänkar -->
+  <link rel="icon" type="image/x-icon" href="public/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="public/favicon-32x32.png">
+  <link rel="apple-touch-icon" type="image/png" href="public/apple-touch-icon.png">
+
   <!-- Stylesheet -->
   <link rel="stylesheet" href="/src/css/main.scss">
 
@@ -29,11 +35,13 @@
 
         <div class="search-section">
           <div id="search-message"></div>
-          <form autocomplete="off">
-            <input id="author-input" type="text" placeholder="Search by Author...">
+          <form id="search-form" autocomplete="off">
+            <input id="author-input" type="text" placeholder="Search by Author..." minlength="1" required>
             <button id="submit-btn" class="btn" type="submit">Search</button>
           </form>
         </div>
+
+        <div id="loader" class="spinner"></div>
 
         <div class="author-section">
           <!-- Author profile -->
