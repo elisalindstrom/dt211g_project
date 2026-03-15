@@ -2,6 +2,7 @@
 
 const searchForm = document.querySelector("#search-form");
 const authorInput = document.querySelector("#author-input");
+const loader = document.querySelector("#loader");
 const authorProfile = document.querySelector("#author-info-card");
 const upcomingSection = document.querySelector("#upcoming-books");
 const publishedSection = document.querySelector("#published-books");
@@ -14,6 +15,11 @@ document.addEventListener("DOMContentLoaded", function () {
 // Läser av sökfältets input
 function searchAuthor(event) {
     event.preventDefault();
+
+    // Rensar alla tidigare fält
+    authorProfile.innerHTML = "";
+    upcomingSection.innerHTML = "";
+    publishedSection.innerHTML = "";
 
     const authorValue = authorInput.value.trim();
     fetchAuthor(authorValue);
@@ -39,11 +45,6 @@ async function fetchAuthor(authorValue) {
 function displayAuthorNotFound() {
     const authorProfile = document.querySelector("#author-info-card");
     authorProfile.classList.remove("hidden");
-
-    // Rensar alla tidigare fält
-    authorProfile.innerHTML = "";
-    upcomingSection.innerHTML = "";
-    publishedSection.innerHTML = "";
 
     const authorNameElement = document.createElement("h2");
     authorNameElement.textContent = `Author not found`;
@@ -82,6 +83,8 @@ function displayAuthor(author) {
 
 // Hämta böcker
 async function fetchBooks(authorName) {
+    loader.classList.remove("hidden");
+
     try {
         const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=inauthor:${authorName}&printType=books&maxResults=20`);
         const books = await response.json();
@@ -91,6 +94,8 @@ async function fetchBooks(authorName) {
         }
     } catch (error) {
         console.error("Något gick fel" + error);
+    } finally {
+        loader.classList.add("hidden");
     }
 }
 
@@ -124,6 +129,8 @@ function sortBooks(books) {
 
     displayUpcomingBooks(upcomingBooks);
     displayPublishedBooks(publishedBooks);
+
+    console.log(publishedBooks);
 }
 
 // Kommande böcker

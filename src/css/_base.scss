@@ -62,15 +62,16 @@ h4 {
 .btn {
     font-size: 18px;
     font-weight: 600;
-    border: 1px solid transparent;
+    border: transparent;
     border-radius: 10px;
     cursor: pointer;
-    background-color: $secondary-color;
-    color: #FFFFFF;
+    background: linear-gradient(80deg, #d8a7bd 25%, #d181a1 50%, #96415E 75%, #8f3457 100%);
+    color: $background-color;
     padding: 0.5rem 1rem;
+    transition: transform 0.5s ease;
 
     &:hover {
-        background-color: $background-color;
-        color: #000000;
+        filter: drop-shadow(0 0 5px #d8a7bd);
+        transform: scale(1.05);
     }
 }
