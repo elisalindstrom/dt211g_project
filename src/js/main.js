@@ -155,7 +155,7 @@ function displayUpcomingBooks(upcomingBooks) {
         bookCard.classList.add("book-card");
 
         const bookImg = document.createElement("img")
-        bookImg.src = book.volumeInfo.imageLinks?.thumbnail;
+        bookImg.src = book.volumeInfo.imageLinks?.thumbnail.replace("http://", "https://");
 
         const bookInfo = document.createElement("div");
         bookInfo.classList.add("book-info");
@@ -234,7 +234,7 @@ function displayPublishedBooks(publishedBooks) {
         bookCard.classList.add("book-card");
 
         const bookImg = document.createElement("img")
-        bookImg.src = book.volumeInfo.imageLinks?.thumbnail;
+        bookImg.src = book.volumeInfo.imageLinks?.thumbnail.replace("http://", "https://");
 
         const bookInfo = document.createElement("div");
         bookInfo.classList.add("book-info");
