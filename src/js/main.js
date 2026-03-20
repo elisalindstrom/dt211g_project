@@ -1,4 +1,5 @@
 "use strict";
+import { API_KEY } from "./config";
 
 const searchForm = document.querySelector("#search-form");
 const authorInput = document.querySelector("#author-input");
@@ -86,12 +87,13 @@ async function fetchBooks(authorName) {
     loader.classList.remove("hidden");
 
     try {
-        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=inauthor:${authorName}&printType=books&maxResults=20`);
+        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=inauthor:${authorName}&printType=books&maxResults=20&key=${API_KEY}`);
         const books = await response.json();
 
-        if (books.items) {
-            filterBooks(books.items);
+        if (!books.items) {
+            return;
         }
+        filterBooks(books.items);
     } catch (error) {
         console.error("Något gick fel" + error);
     } finally {
@@ -161,17 +163,22 @@ function displayUpcomingBooks(upcomingBooks) {
         title.textContent = book.volumeInfo.title;
 
         const authors = document.createElement("p")
-        authors.textContent = book.volumeInfo.authors.join(", ");
+        authors.textContent = book.volumeInfo.authors?.join(", ");
 
         const date = document.createElement("p");
-        date.textContent = `Release date: ${book.volumeInfo.publishedDate}`;
+        const dateOnly = new Date(book.volumeInfo.publishedDate).toLocaleDateString();
+        date.textContent = `Published ${dateOnly}`;
 
         const pageCount = document.createElement("p");
         const pages = book.volumeInfo.pageCount;
 
+        const saveBtn = document.createElement("button");
+        saveBtn.textContent = "Want to Read";
+        saveBtn.classList.add("btn", "save-btn");
+
         upcomingSection.appendChild(bookCard);
         bookCard.append(bookImg, bookInfo);
-        bookInfo.append(title, date);
+        bookInfo.append(title, authors, saveBtn, date);
 
         if (pages > 0) {
             pageCount.textContent = `${pages} pages`;
@@ -209,10 +216,11 @@ function displayPublishedBooks(publishedBooks) {
         title.textContent = book.volumeInfo.title;
 
         const authors = document.createElement("p")
-        authors.textContent = book.volumeInfo.authors.join(", ");
+        authors.textContent = book.volumeInfo.authors?.join(", ");
 
         const date = document.createElement("p");
-        date.textContent = `Published: ${book.volumeInfo.publishedDate}`;
+        const dateOnly = new Date(book.volumeInfo.publishedDate).toLocaleDateString();
+        date.textContent = `Published ${dateOnly}`;
 
         const pageCount = document.createElement("p");
         const pages = book.volumeInfo.pageCount;

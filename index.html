@@ -8,9 +8,9 @@
   <meta name="description" content="Track upcoming book releases from your favorite authors.">
 
   <!-- Faviconlänkar -->
-  <link rel="icon" type="image/x-icon" href="public/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="public/favicon-32x32.png">
-  <link rel="apple-touch-icon" type="image/png" href="public/apple-touch-icon.png">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/apple-touch-icon.png">
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="/src/css/main.scss">
@@ -25,7 +25,7 @@
 <body>
   <div class="container">
     <header>
-      <a href="index.html" class="logo"><img src="/public/nextTBR-logo.svg"></a>
+      <a href="index.html" class="logo"><img src="/nextTBR-logo.svg"></a>
     </header>
 
     <main>
@@ -37,7 +37,7 @@
           <div id="search-message"></div>
           <form id="search-form" autocomplete="off">
             <input id="author-input" type="text" placeholder="Search by Author..." minlength="1" required>
-            <button id="submit-btn" class="btn" type="submit">Search</button>
+            <button id="submit-btn" class="btn search-btn" type="submit">Search</button>
           </form>
         </div>
 
@@ -64,6 +64,7 @@
       </section>
     </main>
   </div>
+  <script type="module" src="/src/js/config.js"></script>
   <script type="module" src="/src/js/main.js"></script>
 </body>
 

@@ -61,6 +61,13 @@ header {
     }
 }
 
+.search-btn {
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(80deg, #d8a7bd 25%, #d181a1 50%, #96415E 75%, #8f3457 100%);
+    color: base.$background-color;
+}
+
 .author-section,
 .card-section {
     width: 100%;
@@ -81,6 +88,7 @@ header {
     display: flex;
     gap: 1rem;
     margin-top: 1rem;
+    padding: 1rem 1rem;
 
     img {
         width: 100px;
@@ -97,7 +105,14 @@ header {
     .book-info {
         display: flex;
         flex-direction: column;
+        width: 100%;
         gap: 0.5rem;
+
+        .save-btn {
+            max-width: 150px;
+            background-color: base.$secondary-color;
+            color: base.$background-color;
+        }
     }
 }
 
