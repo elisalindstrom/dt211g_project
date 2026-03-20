@@ -1,7 +1,7 @@
 $background-color: #fff6f0;
 $secondary-color: #8F3457;
 
-$font-stack: "Plus Jakarta Sans", Helvetica, sans-serif;
+$font-stack: "Inter Tight", Arial, sans-serif;
 
 /* Mixins */
 @mixin flex-center {
@@ -36,8 +36,8 @@ body {
     text-align: left;
 }
 
-h1, h2, h3, h4 {
-    font-family: "Inter Tight", Arial, sans-serif;
+.bold {
+    font-weight: 700;
 }
 
 h1 {
@@ -58,6 +58,16 @@ h3 {
 
 h4 {
     font-size: 16px;
+}
+
+a {
+    color: #d8a7bd;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
 }
 
 .btn {

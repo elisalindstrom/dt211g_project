@@ -4,9 +4,12 @@ import { API_KEY } from "./config";
 const searchForm = document.querySelector("#search-form");
 const authorInput = document.querySelector("#author-input");
 const loader = document.querySelector("#loader");
+const savedBooksSection = document.querySelector("#saved-card");
 const authorProfile = document.querySelector("#author-info-card");
 const upcomingSection = document.querySelector("#upcoming-books");
 const publishedSection = document.querySelector("#published-books");
+
+displaySavedBooks();
 
 // Lyssnar efter submit i formuläret
 document.addEventListener("DOMContentLoaded", function () {
@@ -56,7 +59,6 @@ function displayAuthorNotFound() {
 // Skriv ut författare
 function displayAuthor(author) {
     authorProfile.classList.remove("hidden");
-    authorProfile.innerHTML = "";
 
     let authorName = author.name;
 
@@ -75,9 +77,11 @@ function displayAuthor(author) {
         authorProfile.appendChild(birthDateElement);
     }
 
-    const topWorkElement = document.createElement("p");
-    topWorkElement.textContent = `Top Work: ${author.top_work}`;
-    authorProfile.appendChild(topWorkElement)
+    if (author.top_work) {
+        const topWorkElement = document.createElement("p");
+        topWorkElement.textContent = `Top Work: ${author.top_work}`;
+        authorProfile.appendChild(topWorkElement)
+    }
 
     fetchBooks(authorName);
 }
@@ -90,7 +94,7 @@ async function fetchBooks(authorName) {
         const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=inauthor:${authorName}&printType=books&maxResults=20&key=${API_KEY}`);
         const books = await response.json();
 
-        if (!books.items) {
+        if (books.items === false) {
             return;
         }
         filterBooks(books.items);
@@ -131,14 +135,11 @@ function sortBooks(books) {
 
     displayUpcomingBooks(upcomingBooks);
     displayPublishedBooks(publishedBooks);
-
-    console.log(publishedBooks);
 }
 
 // Kommande böcker
 function displayUpcomingBooks(upcomingBooks) {
     upcomingSection.classList.remove("hidden");
-    upcomingSection.innerHTML = "";
 
     const sectionHeader = document.createElement("h2")
     upcomingSection.appendChild(sectionHeader);
@@ -167,31 +168,57 @@ function displayUpcomingBooks(upcomingBooks) {
 
         const date = document.createElement("p");
         const dateOnly = new Date(book.volumeInfo.publishedDate).toLocaleDateString();
-        date.textContent = `Published ${dateOnly}`;
+        date.textContent = `Releases ${dateOnly}`;
 
         const pageCount = document.createElement("p");
         const pages = book.volumeInfo.pageCount;
 
-        const saveBtn = document.createElement("button");
-        saveBtn.textContent = "Want to Read";
-        saveBtn.classList.add("btn", "save-btn");
-
         upcomingSection.appendChild(bookCard);
         bookCard.append(bookImg, bookInfo);
-        bookInfo.append(title, authors, saveBtn, date);
+        bookInfo.append(title, authors, date);
 
         if (pages > 0) {
             pageCount.textContent = `${pages} pages`;
             bookInfo.appendChild(pageCount);
         }
+
+        const saveBtn = document.createElement("button");
+        saveBtn.textContent = "Want to Read";
+        saveBtn.classList.add("btn", "save-btn");
+        bookInfo.appendChild(saveBtn);
+
+        const infoLink = document.createElement("a");
+        infoLink.textContent = "View details";
+        infoLink.href = book.volumeInfo.infoLink;
+        infoLink.target = "_blank";
+        bookInfo.appendChild(infoLink);
+
+        saveBtn.addEventListener("click", () => {
+            const bookData = {
+                title: book.volumeInfo.title,
+                author: book.volumeInfo.authors,
+                date: book.volumeInfo.publishedDate,
+                link: book.volumeInfo.infoLink
+            };
+
+            const savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
+
+            const bookExists = savedBooks.some(savedBook => savedBook.title === bookData.title);
+
+            if (bookExists === false) {
+                savedBooks.push(bookData);
+            }
+
+            localStorage.setItem("bookData", JSON.stringify(savedBooks));
+
+            displaySavedBooks();
+        })
     });
 }
-
 
 // Publicerade böcker
 function displayPublishedBooks(publishedBooks) {
     publishedSection.classList.remove("hidden");
-    publishedSection.innerHTML = "";
 
     const sectionHeader = document.createElement("h2")
     publishedSection.appendChild(sectionHeader);
@@ -233,5 +260,96 @@ function displayPublishedBooks(publishedBooks) {
             pageCount.textContent = `${pages} pages`;
             bookInfo.appendChild(pageCount);
         }
+
+        const saveBtn = document.createElement("button");
+        saveBtn.textContent = "Want to Read";
+        saveBtn.classList.add("btn", "save-btn");
+        bookInfo.appendChild(saveBtn);
+
+        const infoLink = document.createElement("a");
+        infoLink.textContent = "View details";
+        infoLink.href = book.volumeInfo.infoLink;
+        infoLink.target = "_blank";
+        bookInfo.appendChild(infoLink);
+
+        saveBtn.addEventListener("click", () => {
+            const bookData = {
+                title: book.volumeInfo.title,
+                author: book.volumeInfo.authors,
+                date: book.volumeInfo.publishedDate,
+                link: book.volumeInfo.infoLink
+            };
+
+            const savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
+
+            const bookExists = savedBooks.some(savedBook => savedBook.title === bookData.title);
+
+            if (bookExists === false) {
+                savedBooks.push(bookData);
+            }
+
+            localStorage.setItem("bookData", JSON.stringify(savedBooks));
+
+            displaySavedBooks();
+        })
+    });
+}
+
+function displaySavedBooks() {
+    savedBooksSection.innerHTML = "";
+
+    const savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
+
+    if (savedBooks.length === 0) {
+        savedBooksSection.classList.add("hidden");
+        return;
+    }
+    savedBooksSection.classList.remove("hidden");
+
+    const savedBooksHeader = document.createElement("h2");
+    savedBooksHeader.textContent = `Want to Read`;
+    savedBooksSection.appendChild(savedBooksHeader);
+
+    savedBooks.forEach(book => {
+        const savedCard = document.createElement("div");
+        savedCard.classList.add("saved-card-info");
+
+        const savedInfo = document.createElement("div");
+        savedInfo.classList.add("book-info");
+
+        const savedCardHeader = document.createElement("div");
+        savedCardHeader.classList.add("saved-card-header");
+
+        const title = document.createElement("p")
+        title.classList.add("bold");
+        title.textContent = book.title;
+
+        const authors = document.createElement("p")
+        authors.textContent = book.author.join(", ");
+
+        const publishedDate = document.createElement("p")
+        publishedDate.textContent = `Published ${book.date}`;
+
+        const infoLink = document.createElement("a");
+        infoLink.textContent = "View details";
+        infoLink.href = book.link;
+        infoLink.target = "_blank";
+
+        savedBooksSection.appendChild(savedCard);
+        savedCard.append(savedCardHeader, savedInfo)
+        savedCardHeader.append(title)
+        savedInfo.append(authors, publishedDate, infoLink);
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = `Remove`;
+        deleteBtn.classList.add("btn", "delete-btn");
+        savedCardHeader.appendChild(deleteBtn);
+        deleteBtn.addEventListener("click", function () {
+            let updatedSavedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
+            updatedSavedBooks = updatedSavedBooks.filter(savedBook => savedBook.title !== book.title);
+            localStorage.setItem("bookData", JSON.stringify(updatedSavedBooks))
+
+            displaySavedBooks();
+        })
     });
 }

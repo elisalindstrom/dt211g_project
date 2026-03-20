@@ -17,8 +17,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap"
     rel="stylesheet">
 </head>
 
@@ -28,41 +27,48 @@
       <a href="index.html" class="logo"><img src="/nextTBR-logo.svg"></a>
     </header>
 
-    <main>
-      <section class="main-content">
-        <h1>Find your next To Be Read</h1>
-        <p>Track your favorite authors upcoming book releases</p>
+    <div class="app">
+      <main>
+        <section class="main-content">
+          <h1>Find your next To Be Read</h1>
+          <p>Track your favorite authors upcoming book releases</p>
 
-        <div class="search-section">
-          <div id="search-message"></div>
-          <form id="search-form" autocomplete="off">
-            <input id="author-input" type="text" placeholder="Search by Author..." minlength="1" required>
-            <button id="submit-btn" class="btn search-btn" type="submit">Search</button>
-          </form>
-        </div>
-
-        <div class="author-section">
-          <!-- Author profile -->
-          <div id="author-info-card" class="hidden">
+          <div class="search-section">
+            <div id="search-message"></div>
+            <form id="search-form" autocomplete="off">
+              <input id="author-input" type="text" placeholder="Search by Author..." minlength="1" required>
+              <button id="submit-btn" class="btn search-btn" type="submit">Search</button>
+            </form>
           </div>
-        </div>
 
-        <div id="loader" class="spinner hidden"></div>
-
-        <div class="card-section">
-          <!-- Upcoming releases -->
-          <div id="upcoming-books" class="hidden">
+          <div class="saved-books">
+            <div id="saved-card" class="hidden">
+            </div>
           </div>
-        </div>
 
-        <div class="card-section">
-          <!-- Published books -->
-          <div id="published-books" class="hidden">
+          <div class="author-section">
+            <!-- Author profile -->
+            <div id="author-info-card" class="hidden">
+            </div>
           </div>
-        </div>
 
-      </section>
-    </main>
+          <div id="loader" class="spinner hidden"></div>
+
+          <div class="card-section">
+            <!-- Upcoming releases -->
+            <div id="upcoming-books" class="hidden">
+            </div>
+          </div>
+
+          <div class="card-section">
+            <!-- Published books -->
+            <div id="published-books" class="hidden">
+            </div>
+          </div>
+        </section>
+      </main>
+
+    </div>
   </div>
   <script type="module" src="/src/js/config.js"></script>
   <script type="module" src="/src/js/main.js"></script>
