@@ -1,5 +1,5 @@
 "use strict";
-import { API_KEY } from "./config";
+const API_KEY = "AIzaSyCSUg9ANLug1QAFQZyyOt81JiDAnsI-ZhY";
 
 const searchForm = document.querySelector("#search-form");
 const authorInput = document.querySelector("#author-input");
