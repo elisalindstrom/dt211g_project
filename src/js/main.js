@@ -11,10 +11,7 @@ const publishedSection = document.querySelector("#published-books");
 
 displaySavedBooks();
 
-// Lyssnar efter submit i formuläret
-document.addEventListener("DOMContentLoaded", function () {
-    searchForm.addEventListener("submit", searchAuthor);
-});
+searchForm.addEventListener("submit", searchAuthor);
 
 // Läser av sökfältets input
 function searchAuthor(event) {
@@ -137,7 +134,7 @@ function sortBooks(books) {
     displayPublishedBooks(publishedBooks);
 }
 
-// Kommande böcker
+
 function displayUpcomingBooks(upcomingBooks) {
     upcomingSection.classList.remove("hidden");
 
@@ -151,72 +148,11 @@ function displayUpcomingBooks(upcomingBooks) {
     }
 
     upcomingBooks.forEach(book => {
-        const bookCard = document.createElement("div");
-        bookCard.classList.add("book-card");
-
-        const bookImg = document.createElement("img")
-        bookImg.src = book.volumeInfo.imageLinks?.thumbnail.replace("http://", "https://");
-
-        const bookInfo = document.createElement("div");
-        bookInfo.classList.add("book-info");
-
-        const title = document.createElement("h3")
-        title.textContent = book.volumeInfo.title;
-
-        const authors = document.createElement("p")
-        authors.textContent = book.volumeInfo.authors?.join(", ");
-
-        const date = document.createElement("p");
-        const dateOnly = new Date(book.volumeInfo.publishedDate).toLocaleDateString();
-        date.textContent = `Releases ${dateOnly}`;
-
-        const pageCount = document.createElement("p");
-        const pages = book.volumeInfo.pageCount;
-
-        upcomingSection.appendChild(bookCard);
-        bookCard.append(bookImg, bookInfo);
-        bookInfo.append(title, authors, date);
-
-        if (pages > 0) {
-            pageCount.textContent = `${pages} pages`;
-            bookInfo.appendChild(pageCount);
-        }
-
-        const saveBtn = document.createElement("button");
-        saveBtn.textContent = "Want to Read";
-        saveBtn.classList.add("btn", "save-btn");
-        bookInfo.appendChild(saveBtn);
-
-        const infoLink = document.createElement("a");
-        infoLink.textContent = "View details";
-        infoLink.href = book.volumeInfo.infoLink;
-        infoLink.target = "_blank";
-        bookInfo.appendChild(infoLink);
-
-        saveBtn.addEventListener("click", () => {
-            const bookData = {
-                title: book.volumeInfo.title,
-                author: book.volumeInfo.authors,
-                date: book.volumeInfo.publishedDate,
-                link: book.volumeInfo.infoLink
-            };
-
-            const savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
-
-            const bookExists = savedBooks.some(savedBook => savedBook.title === bookData.title);
-
-            if (bookExists === false) {
-                savedBooks.push(bookData);
-            }
-
-            localStorage.setItem("bookData", JSON.stringify(savedBooks));
-
-            displaySavedBooks();
-        })
-    });
+        const card = createBookCard(book)
+        upcomingSection.appendChild(card);
+    })
 }
 
-// Publicerade böcker
 function displayPublishedBooks(publishedBooks) {
     publishedSection.classList.remove("hidden");
 
@@ -230,69 +166,75 @@ function displayPublishedBooks(publishedBooks) {
     }
 
     publishedBooks.forEach(book => {
-        const bookCard = document.createElement("div");
-        bookCard.classList.add("book-card");
+        const card = createBookCard(book)
+        publishedSection.appendChild(card);
+    })
+}
 
-        const bookImg = document.createElement("img")
-        bookImg.src = book.volumeInfo.imageLinks?.thumbnail.replace("http://", "https://");
+// Skapa bokkort
+function createBookCard(book) {
+    const bookCard = document.createElement("div");
+    bookCard.classList.add("book-card");
 
-        const bookInfo = document.createElement("div");
-        bookInfo.classList.add("book-info");
+    const bookImg = document.createElement("img")
+    bookImg.src = book.volumeInfo.imageLinks?.thumbnail.replace("http://", "https://");
 
-        const title = document.createElement("h3")
-        title.textContent = book.volumeInfo.title;
+    const bookInfo = document.createElement("div");
+    bookInfo.classList.add("book-info");
 
-        const authors = document.createElement("p")
-        authors.textContent = book.volumeInfo.authors?.join(", ");
+    const title = document.createElement("h3")
+    title.textContent = book.volumeInfo.title;
 
-        const date = document.createElement("p");
-        const dateOnly = new Date(book.volumeInfo.publishedDate).toLocaleDateString();
-        date.textContent = `Published ${dateOnly}`;
+    const authors = document.createElement("p")
+    authors.textContent = book.volumeInfo.authors?.join(", ");
 
-        const pageCount = document.createElement("p");
-        const pages = book.volumeInfo.pageCount;
+    const date = document.createElement("p");
+    const dateOnly = new Date(book.volumeInfo.publishedDate).toLocaleDateString();
+    date.textContent = `Releases ${dateOnly}`;
 
-        publishedSection.appendChild(bookCard);
-        bookCard.append(bookImg, bookInfo);
-        bookInfo.append(title, authors, date)
+    const pageCount = document.createElement("p");
+    const pages = book.volumeInfo.pageCount;
 
-        if (pages > 0) {
-            pageCount.textContent = `${pages} pages`;
-            bookInfo.appendChild(pageCount);
+    bookCard.append(bookImg, bookInfo);
+    bookInfo.append(title, authors, date);
+
+    if (pages > 0) {
+        pageCount.textContent = `${pages} pages`;
+        bookInfo.appendChild(pageCount);
+    }
+
+    const saveBtn = document.createElement("button");
+    saveBtn.textContent = "Want to Read";
+    saveBtn.classList.add("btn", "save-btn");
+    bookInfo.appendChild(saveBtn);
+
+    const infoLink = document.createElement("a");
+    infoLink.textContent = "View details";
+    infoLink.href = book.volumeInfo.infoLink;
+    infoLink.target = "_blank";
+    bookInfo.appendChild(infoLink);
+
+    saveBtn.addEventListener("click", () => {
+        const bookData = {
+            title: book.volumeInfo.title,
+            author: book.volumeInfo.authors,
+            date: book.volumeInfo.publishedDate,
+            link: book.volumeInfo.infoLink
+        };
+
+        const savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
+
+        const bookExists = savedBooks.some(savedBook => savedBook.title === bookData.title);
+
+        if (bookExists === false) {
+            savedBooks.push(bookData);
         }
 
-        const saveBtn = document.createElement("button");
-        saveBtn.textContent = "Want to Read";
-        saveBtn.classList.add("btn", "save-btn");
-        bookInfo.appendChild(saveBtn);
+        localStorage.setItem("bookData", JSON.stringify(savedBooks));
 
-        const infoLink = document.createElement("a");
-        infoLink.textContent = "View details";
-        infoLink.href = book.volumeInfo.infoLink;
-        infoLink.target = "_blank";
-        bookInfo.appendChild(infoLink);
-
-        saveBtn.addEventListener("click", () => {
-            const bookData = {
-                title: book.volumeInfo.title,
-                author: book.volumeInfo.authors,
-                date: book.volumeInfo.publishedDate,
-                link: book.volumeInfo.infoLink
-            };
-
-            const savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
-
-            const bookExists = savedBooks.some(savedBook => savedBook.title === bookData.title);
-
-            if (bookExists === false) {
-                savedBooks.push(bookData);
-            }
-
-            localStorage.setItem("bookData", JSON.stringify(savedBooks));
-
-            displaySavedBooks();
-        })
-    });
+        displaySavedBooks();
+    })
+    return bookCard;
 }
 
 function displaySavedBooks() {
