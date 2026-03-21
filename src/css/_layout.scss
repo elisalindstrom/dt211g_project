@@ -7,13 +7,20 @@
     margin: 0 auto;
 }
 
+.animation-wrapper {
+    animation: fadeIn 1.5s ease-in forwards;
+}
+
+.hidden {
+    display: none;
+}
+
 header {
     @include base.flex-center;
     color: #FFFFFF;
 
     .logo {
-        padding: 1rem;
-        animation: fadeIn 1.5s ease-in;
+        padding: 1rem 0.5rem;
 
         img {
             max-width: 100px;
@@ -24,13 +31,8 @@ header {
 .main-content {
     @include base.flex-center;
     flex-direction: column;
-    padding: 1rem 0.5rem;
+    padding: 1rem 0.5rem 2rem 0.5rem;
 }
-
-.hidden {
-    display: none;
-}
-
 
 .spinner {
     width: 50px;
@@ -45,6 +47,7 @@ header {
 .search-section {
     @include base.card;
     margin-top: 2rem;
+    margin-bottom: 1rem;
 
     form {
         display: flex;
@@ -52,10 +55,11 @@ header {
         gap: 0.6rem;
 
         input {
-            padding: 1rem 1rem;
+            padding: 1rem 0.5rem;
             border: 1px solid #E1DCD7;
             border-radius: 10px;
             width: 100%;
+            font-size: 16px;
 
             &:focus {
                 outline: none;
@@ -64,13 +68,13 @@ header {
             }
         }
     }
-}
 
-.search-btn {
-    font-size: 16px;
-    font-weight: 600;
-    background: linear-gradient(80deg, #d8a7bd 25%, #d181a1 50%, #96415E 75%, #8f3457 100%);
-    color: base.$background-color;
+    .search-btn {
+        font-size: 16px;
+        font-weight: 600;
+        background: linear-gradient(80deg, #d8a7bd 25%, #d181a1 50%, #96415E 75%, #8f3457 100%);
+        color: base.$background-color;
+    }
 }
 
 .saved-books,
@@ -84,28 +88,23 @@ header {
 
 #author-info-card {
     @include base.card;
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-    padding: 1rem 1rem;
 }
 
 .book-card {
     @include base.card;
     display: flex;
     gap: 1rem;
-    margin-top: 1rem;
-    padding: 1rem 1rem;
+    transition: transform 0.4s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+    }
 
     img {
         width: 100px;
         height: 100%;
         max-width: 100%;
         border-radius: 10px;
-        transition: transform 0.5s ease;
-
-        &:hover {
-            transform: translateY(-10px);
-        }
     }
 
     .book-info {
@@ -118,6 +117,17 @@ header {
             max-width: 150px;
             background-color: base.$secondary-color;
             color: base.$background-color;
+
+            &:disabled {
+                background-color: #E1DCD7;
+                opacity: 0.7;
+                cursor: auto;
+
+                &:hover {
+                    filter: none;
+                    transform: none;
+                }
+            }
         }
     }
 }
@@ -126,18 +136,24 @@ header {
     @include base.card;
     gap: 0.2rem;
     padding: 0.5rem 1rem;
-}
+    transition: transform 0.4s ease;
 
-.saved-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-}
+    &:hover {
+        transform: translateY(-4px);
+    }
 
-.delete-btn {
-    background-color: #E1DCD7;
-    margin-top: 0.2rem;
+    .saved-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+
+        .delete-btn {
+            background-color: #E1DCD7;
+            color: #FFFFFF;
+            margin-top: 0.2rem;
+        }
+    }
 }
 
 @media (max-width: 600px) {
