@@ -8,17 +8,15 @@ const savedBooksSection = document.querySelector("#saved-card");
 const authorProfile = document.querySelector("#author-info-card");
 const upcomingSection = document.querySelector("#upcoming-books");
 const publishedSection = document.querySelector("#published-books");
-
-let upcomingBooks = [];
-let publishedBooks = [];
+let currentBooks = [];
 
 displaySavedBooks();
 
 searchForm.addEventListener("submit", searchAuthor);
 
 /**
- * 
- * @param {*} event 
+ * Läser av inputvärde efter submit i formulär.
+ * @param {SubmitEvent} event - submit
  */
 function searchAuthor(event) {
     event.preventDefault();
@@ -33,9 +31,8 @@ function searchAuthor(event) {
 }
 
 /**
- * 
- * @param {*} authorValue 
- * @returns 
+ * Hämtar författare från Open Library API utifrån sökfältets input.
+ * @param {string} authorValue - författare från sökfält
  */
 async function fetchAuthor(authorValue) {
     try {
@@ -53,10 +50,9 @@ async function fetchAuthor(authorValue) {
 }
 
 /**
- * 
+ * Visar meddelande om ingen författare kunnat hittas.
  */
 function displayAuthorNotFound() {
-    const authorProfile = document.querySelector("#author-info-card");
     authorProfile.classList.remove("hidden");
 
     const authorNameElement = document.createElement("h2");
@@ -65,54 +61,72 @@ function displayAuthorNotFound() {
 }
 
 /**
- * 
- * @param {*} author 
+ * Skriver ut information om författare från Open Library API.
+ * @param {Object} author - Objekt med författarinformation
+ * @param {string} author.name - Författarnamn
+ * @param {string} author.key - Författar-ID
+ * @param {string} author.birth_date - Födelsedatum
+ * @param {string} author.top_work - Mest kända bok
  */
 function displayAuthor(author) {
     authorProfile.classList.remove("hidden");
 
-    let authorName = author.name;
+    const authorWrapperEl = document.createElement("div");
+    authorWrapperEl.classList.add("author-wrapper");
 
-    const authorProfileHeader = document.createElement("h2");
+    const key = author.key;
+    const authorImgEl = document.createElement("img");
+    authorImgEl.src = `https://covers.openlibrary.org/a/olid/${key}-L.jpg?default=false`;
+    authorImgEl.alt = author.name;
+    // Vid error ta bort bild
+    authorImgEl.onerror = function () {
+        authorImgEl.remove();
+    }
 
-    authorProfileHeader.textContent = `Author Profile`;
-    authorProfile.appendChild(authorProfileHeader);
+    const authorInfoEl = document.createElement("div");
+    authorInfoEl.classList.add("author-info");
 
-    const authorNameElement = document.createElement("h3");
-    authorNameElement.textContent = authorName;
-    authorProfile.appendChild(authorNameElement);
+    const authorProfileHeaderEl = document.createElement("h2");
+    authorProfileHeaderEl.textContent = `Author Profile`;
+    authorProfile.appendChild(authorProfileHeaderEl);
+
+    const authorNameEl = document.createElement("h3");
+    authorNameEl.textContent = author.name;
+    authorInfoEl.appendChild(authorNameEl);
+
+    authorWrapperEl.append(authorImgEl, authorInfoEl);
+    authorProfile.appendChild(authorWrapperEl);
 
     if (author.birth_date) {
-        const birthDateElement = document.createElement("p");
-        birthDateElement.textContent = `Born: ${author.birth_date}`;
-        authorProfile.appendChild(birthDateElement);
+        const birthDateEl = document.createElement("p");
+        birthDateEl.textContent = `Born: ${author.birth_date}`;
+        authorInfoEl.appendChild(birthDateEl);
     }
 
     if (author.top_work) {
-        const topWorkElement = document.createElement("p");
-        topWorkElement.textContent = `Top Work: ${author.top_work}`;
-        authorProfile.appendChild(topWorkElement)
+        const topWorkEl = document.createElement("p");
+        topWorkEl.textContent = `Top Work: ${author.top_work}`;
+        authorInfoEl.appendChild(topWorkEl)
     }
-    fetchBooks(authorName);
+
+    fetchBooks(author.name);
 }
 
 /**
- * Hämtar böcker från Google Books API.
- * @param {*} authorName 
- * @returns 
+ * Hämtar böcker från Google Books API utifrån författarnamn.
+ * @param {string} authorName - Författarnamn
  */
 async function fetchBooks(authorName) {
     loader.classList.remove("hidden");
 
     try {
-        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=inauthor:"${authorName}"&printType=books&maxResults=40&key=${API_KEY}`);
+        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=inauthor:${authorName}&printType=books&maxResults=20&key=${API_KEY}`);
         const books = await response.json();
 
-        if (books.items === false) {
+        if (!books.items) {
             return;
         }
         filterBooks(books.items);
-        console.log(books.items);
     } catch (error) {
         console.error("Något gick fel" + error);
     } finally {
@@ -121,24 +135,26 @@ async function fetchBooks(authorName) {
 }
 
 /**
- * Filtrerar hämtade böcker så endast de med titel, datum och omslag skickas vidare.
- * @param {*} books 
+ * Filtrerar bort böcker som saknar titel, datum och omslag.
+ * @param {Object[]} books - Array av bokobjekt från Google Books API
  */
 function filterBooks(books) {
-    const filteredBooks = books.filter(book => book.volumeInfo?.title && book.volumeInfo?.publishedDate && book.volumeInfo?.imageLinks);
+    const filteredBooks = books.filter(book =>
+        book.volumeInfo?.title && book.volumeInfo?.publishedDate && book.volumeInfo?.imageLinks);
 
+    currentBooks = filteredBooks;
     sortBooks(filteredBooks);
 }
 
 /**
- * Sorterar böcker utifrån dagens datum.
- * @param {*} books 
+ * Delar upp böcker i kommande och publicerade utifrån datum.
+ * @param {Object[]} books - Filtrerade bokobjekt
  */
 function sortBooks(books) {
     const today = new Date();
 
-    upcomingBooks = [];
-    publishedBooks = [];
+    let upcomingBooks = [];
+    let publishedBooks = [];
 
     books.forEach(book => {
         const publishedData = book.volumeInfo.publishedDate;
@@ -159,8 +175,8 @@ function sortBooks(books) {
 }
 
 /**
- * Skriver ut kommande böcker
- * @param {*} upcomingBooks 
+ * Renderar sektion med kommande böcker.
+ * @param {Object[]} upcomingBooks - Array med kommande böcker
  */
 function displayUpcomingBooks(upcomingBooks) {
     upcomingSection.innerHTML = "";
@@ -170,19 +186,19 @@ function displayUpcomingBooks(upcomingBooks) {
     }
     upcomingSection.classList.remove("hidden");
 
-    const sectionHeader = document.createElement("h2");
-    upcomingSection.appendChild(sectionHeader);
-    sectionHeader.textContent = `Upcoming Releases`;
+    const sectionHeaderEl = document.createElement("h2");
+    sectionHeaderEl.textContent = `Upcoming Releases`;
+    upcomingSection.appendChild(sectionHeaderEl);
 
     upcomingBooks.forEach(book => {
-        const card = createBookCard(book)
-        upcomingSection.appendChild(card);
+        const bookCard = createBookCard(book)
+        upcomingSection.appendChild(bookCard);
     })
 }
 
 /**
- * Skriver ut publicerade böcker
- * @param {*} publishedBooks 
+ * Renderar sektion med publicerade böcker.
+ * @param {Object[]} publishedBooks - Array med redan publicerade böcker 
  */
 function displayPublishedBooks(publishedBooks) {
     publishedSection.innerHTML = "";
@@ -191,21 +207,26 @@ function displayPublishedBooks(publishedBooks) {
         return;
     }
     publishedSection.classList.remove("hidden");
-    
-    const sectionHeader = document.createElement("h2");
-    publishedSection.appendChild(sectionHeader);
-    sectionHeader.textContent = `Published Books`;
+
+    const sectionHeaderEl = document.createElement("h2");
+    sectionHeaderEl.textContent = `Published Books`;
+    publishedSection.appendChild(sectionHeaderEl);
 
     publishedBooks.forEach(book => {
-        const card = createBookCard(book)
-        publishedSection.appendChild(card);
+        const bookCard = createBookCard(book)
+        publishedSection.appendChild(bookCard);
     })
 }
 
 /**
- * Skapar bokkort
- * @param {*} book 
- * @returns 
+ * Skapar ett bokkort för varje bok.
+ * @param {Object} book - Ett bokobjekt
+ * @param {Object} book.volumeInfo - Information om bok
+ * @param {string} book.volumeInfo.title - Titel
+ * @param {string[]} book.volumeInfo.authors - Författare
+ * @param {string} book.volumeInfo.publishedDate - Publiceringsdatum
+ * @param {string} book.volumeInfo.infoLink - Länk till bok
+ * @returns {HTMLDivElement} - Ett bokkort
  */
 function createBookCard(book) {
     let savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
@@ -214,56 +235,55 @@ function createBookCard(book) {
     const bookCard = document.createElement("div");
     bookCard.classList.add("book-card");
 
-    const bookImg = document.createElement("img")
-    bookImg.src = book.volumeInfo.imageLinks?.thumbnail.replace("http://", "https://");
+    const bookImgEl = document.createElement("img")
+    bookImgEl.src = book.volumeInfo.imageLinks?.thumbnail.replace("http://", "https://");
 
-    const bookInfo = document.createElement("div");
-    bookInfo.classList.add("book-info");
+    const bookInfoEl = document.createElement("div");
+    bookInfoEl.classList.add("book-info");
 
-    const title = document.createElement("h3")
-    title.textContent = book.volumeInfo.title;
+    const titleEl = document.createElement("h3")
+    titleEl.textContent = book.volumeInfo.title;
 
-    const authors = document.createElement("p")
-    authors.textContent = book.volumeInfo.authors?.join(", ");
+    const authorsEl = document.createElement("p")
+    authorsEl.textContent = book.volumeInfo.authors?.join(", ");
 
-    const date = document.createElement("p");
+    const dateEl = document.createElement("p");
     const dateOnly = new Date(book.volumeInfo.publishedDate).toLocaleDateString();
-    date.textContent = `Published ${dateOnly}`;
+    dateEl.textContent = `Published ${dateOnly}`;
 
-    const pageCount = document.createElement("p");
+    const pageCountEl = document.createElement("p");
     const pages = book.volumeInfo.pageCount;
 
-    bookCard.append(bookImg, bookInfo);
-    bookInfo.append(title, authors, date);
+    bookCard.append(bookImgEl, bookInfoEl);
+    bookInfoEl.append(titleEl, authorsEl, dateEl);
 
-    if (pages > 0) {
-        pageCount.textContent = `${pages} pages`;
-        bookInfo.appendChild(pageCount);
+    if (pages && pages > 0) {
+        pageCountEl.textContent = `${pages} pages`;
+        bookInfoEl.appendChild(pageCountEl);
     }
 
-    const saveBtn = document.createElement("button");
-    saveBtn.classList.add("btn", "save-btn");
-
-    bookInfo.appendChild(saveBtn);
+    const saveBtnEl = document.createElement("button");
+    saveBtnEl.classList.add("btn", "save-btn");
+    bookInfoEl.appendChild(saveBtnEl);
 
     if (bookExists) {
-        saveBtn.textContent = "Saved";
-        saveBtn.disabled = true;
+        saveBtnEl.textContent = "Saved";
+        saveBtnEl.disabled = true;
     } else {
-        saveBtn.textContent = "Want to Read";
+        saveBtnEl.textContent = "Want to Read";
     }
 
-    const infoLink = document.createElement("a");
-    infoLink.textContent = "View details";
-    infoLink.href = book.volumeInfo.infoLink;
-    infoLink.target = "_blank";
-    bookInfo.appendChild(infoLink);
+    const infoLinkEl = document.createElement("a");
+    infoLinkEl.textContent = "View details";
+    infoLinkEl.href = book.volumeInfo.infoLink;
+    infoLinkEl.target = "_blank";
+    bookInfoEl.appendChild(infoLinkEl);
 
-    saveBtn.addEventListener("click", () => {
+    saveBtnEl.addEventListener("click", () => {
         saveBookCard(book);
 
-        saveBtn.textContent = "Saved";
-        saveBtn.disabled = true;
+        saveBtnEl.textContent = "Saved";
+        saveBtnEl.disabled = true;
 
         displaySavedBooks();
     })
@@ -271,8 +291,8 @@ function createBookCard(book) {
 }
 
 /**
- * 
- * @param {*} book 
+ * Sparar en bok i localStorage om den inte redan finns där.
+ * @param {Object} book - Ett bokobjekt från Google Books API
  */
 function saveBookCard(book) {
     let savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
@@ -284,7 +304,6 @@ function saveBookCard(book) {
         link: book.volumeInfo.infoLink
     };
 
-    savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
     let bookExists = savedBooks.some(savedBook => savedBook.title === bookData.title);
 
     if (bookExists === false) {
@@ -295,8 +314,7 @@ function saveBookCard(book) {
 }
 
 /**
- * 
- * @returns 
+ * Hämtar sparade böcker från localStorage och skriver ut dem.
  */
 function displaySavedBooks() {
     savedBooksSection.innerHTML = "";
@@ -309,63 +327,66 @@ function displaySavedBooks() {
     }
     savedBooksSection.classList.remove("hidden");
 
-    const savedBooksHeader = document.createElement("h2");
-    savedBooksHeader.textContent = `Want to Read`;
-    savedBooksSection.appendChild(savedBooksHeader);
+    const savedBooksHeaderEl = document.createElement("h2");
+    savedBooksHeaderEl.textContent = `Want to Read`;
+    savedBooksSection.appendChild(savedBooksHeaderEl);
 
     savedBooks.forEach(book => {
         const savedCard = createSavedBookCard(book);
         savedBooksSection.appendChild(savedCard);
-
     })
 }
 
 /**
- * Skapar kort för sparade böcker
- * @returns 
+ * Skapar bokkort för en sparad bok.
+ * @param {Object} book - Ett sparat bokobjekt från localStorage
+ * @param {string} book.title - Titel
+ * @param {string[]} book.author - Författare
+ * @param {string} book.date - Datum
+ * @param {string} book.link - Länk till bok
+ * @returns {HTMLDivElement} - Ett bokkort
  */
 function createSavedBookCard(book) {
     const savedCard = document.createElement("div");
     savedCard.classList.add("saved-card-info");
 
-    const savedInfo = document.createElement("div");
-    savedInfo.classList.add("book-info");
+    const savedInfoEl = document.createElement("div");
+    savedInfoEl.classList.add("book-info");
 
-    const savedCardHeader = document.createElement("div");
-    savedCardHeader.classList.add("saved-card-header");
+    const savedCardHeaderEl = document.createElement("div");
+    savedCardHeaderEl.classList.add("saved-card-header");
 
-    const title = document.createElement("p")
-    title.classList.add("bold");
-    title.textContent = book.title;
+    const titleEl = document.createElement("p")
+    titleEl.classList.add("bold");
+    titleEl.textContent = book.title;
 
-    const authors = document.createElement("p")
-    authors.textContent = book.author.join(", ");
+    const authorsEl = document.createElement("p")
+    authorsEl.textContent = book.author.join(", ");
 
-    const publishedDate = document.createElement("p")
-    publishedDate.textContent = `Published ${book.date}`;
+    const publishedDateEl = document.createElement("p")
+    publishedDateEl.textContent = `Published ${book.date}`;
 
-    const infoLink = document.createElement("a");
-    infoLink.textContent = "View details";
-    infoLink.href = book.link;
-    infoLink.target = "_blank";
+    const infoLinkEl = document.createElement("a");
+    infoLinkEl.textContent = "View details";
+    infoLinkEl.href = book.link;
+    infoLinkEl.target = "_blank";
 
-    savedCard.append(savedCardHeader, savedInfo)
-    savedCardHeader.append(title)
-    savedInfo.append(authors, publishedDate, infoLink);
+    savedCard.append(savedCardHeaderEl, savedInfoEl)
+    savedCardHeaderEl.append(titleEl)
+    savedInfoEl.append(authorsEl, publishedDateEl, infoLinkEl);
 
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = `Remove`;
-    deleteBtn.classList.add("btn", "delete-btn");
-    savedCardHeader.appendChild(deleteBtn);
+    const deleteBtnEl = document.createElement("button");
+    deleteBtnEl.textContent = `Remove`;
+    deleteBtnEl.classList.add("btn", "delete-btn");
+    savedCardHeaderEl.appendChild(deleteBtnEl);
 
-    deleteBtn.addEventListener("click", function () {
+    deleteBtnEl.addEventListener("click", function () {
         let updatedSavedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
         updatedSavedBooks = updatedSavedBooks.filter(savedBook => savedBook.title !== book.title);
         localStorage.setItem("bookData", JSON.stringify(updatedSavedBooks))
 
         displaySavedBooks();
-        displayUpcomingBooks(upcomingBooks);
-        displayPublishedBooks(publishedBooks);
+        sortBooks(currentBooks);
     })
     return savedCard;
 }
