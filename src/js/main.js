@@ -1,5 +1,5 @@
 "use strict";
-const API_KEY = "AIzaSyCSUg9ANLug1QAFQZyyOt81JiDAnsI-ZhY";
+const API_KEY = "AIzaSyCSUg9ANLug1QAFQZyyOt81JiDAnsI-ZhY"; // Nyckel för Google Books API
 
 const searchForm = document.querySelector("#search-form");
 const authorInput = document.querySelector("#author-input");
@@ -8,6 +8,7 @@ const savedBooksSection = document.querySelector("#saved-card");
 const authorProfile = document.querySelector("#author-info-card");
 const upcomingSection = document.querySelector("#upcoming-books");
 const publishedSection = document.querySelector("#published-books");
+let hasSearched = false;
 let currentBooks = [];
 
 displaySavedBooks();
@@ -39,13 +40,14 @@ async function fetchAuthor(authorValue) {
         const response = await fetch(`https://openlibrary.org/search/authors.json?q=${authorValue}`);
         const author = await response.json();
 
+        // Om ingen författare kan hittas
         if (author.docs.length === 0) {
             displayAuthorNotFound();
             return;
         }
         displayAuthor(author.docs[0]);
     } catch (error) {
-        console.error("Något gick fel" + error);
+        console.error("Something went wrong:", error);
     }
 }
 
@@ -53,7 +55,10 @@ async function fetchAuthor(authorValue) {
  * Visar meddelande om ingen författare kunnat hittas.
  */
 function displayAuthorNotFound() {
-    authorProfile.classList.remove("hidden");
+    // Sökning avslutad
+    hasSearched = false;
+
+    authorProfile.parentElement.classList.remove("hidden");
 
     const authorNameElement = document.createElement("h2");
     authorNameElement.textContent = `Author not found`;
@@ -69,13 +74,18 @@ function displayAuthorNotFound() {
  * @param {string} author.top_work - Mest kända bok
  */
 function displayAuthor(author) {
-    authorProfile.classList.remove("hidden");
+    // Aktiv sökning
+    hasSearched = true;
+
+    authorProfile.parentElement.classList.remove("hidden");
 
     const authorWrapperEl = document.createElement("div");
     authorWrapperEl.classList.add("author-wrapper");
 
     const key = author.key;
     const authorImgEl = document.createElement("img");
+    /* Hämtar författarporträtt från Open Library Covers API
+    Default=false för att returnera error istället för blank bild om bild saknas */
     authorImgEl.src = `https://covers.openlibrary.org/a/olid/${key}-L.jpg?default=false`;
     authorImgEl.alt = author.name;
     // Vid error ta bort bild
@@ -128,7 +138,7 @@ async function fetchBooks(authorName) {
         }
         filterBooks(books.items);
     } catch (error) {
-        console.error("Något gick fel" + error);
+        console.error("Something went wrong:", error);
     } finally {
         loader.classList.add("hidden");
     }
@@ -181,17 +191,24 @@ function sortBooks(books) {
 function displayUpcomingBooks(upcomingBooks) {
     upcomingSection.innerHTML = "";
 
-    if (upcomingBooks.length === 0) {
+    // Förhindrar att sökresultatet uppdateras med fel rubrik när en sparad bok tas bort utan ny sökning
+    if (upcomingBooks.length === 0 && currentBooks.length === 0) {
         return;
     }
-    upcomingSection.classList.remove("hidden");
 
+    upcomingSection.parentElement.classList.remove("hidden");
     const sectionHeaderEl = document.createElement("h2");
-    sectionHeaderEl.textContent = `Upcoming Releases`;
     upcomingSection.appendChild(sectionHeaderEl);
 
+    if (upcomingBooks.length === 0) {
+        sectionHeaderEl.textContent = `No Upcoming Releases Found`;
+        return;
+    }
+    sectionHeaderEl.textContent = `Upcoming Releases`;
+
+    let savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
     upcomingBooks.forEach(book => {
-        const bookCard = createBookCard(book)
+        const bookCard = createBookCard(book, savedBooks);
         upcomingSection.appendChild(bookCard);
     })
 }
@@ -206,14 +223,15 @@ function displayPublishedBooks(publishedBooks) {
     if (publishedBooks.length === 0) {
         return;
     }
-    publishedSection.classList.remove("hidden");
+    publishedSection.parentElement.classList.remove("hidden");
 
     const sectionHeaderEl = document.createElement("h2");
     sectionHeaderEl.textContent = `Published Books`;
     publishedSection.appendChild(sectionHeaderEl);
 
+    let savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
     publishedBooks.forEach(book => {
-        const bookCard = createBookCard(book)
+        const bookCard = createBookCard(book, savedBooks);
         publishedSection.appendChild(bookCard);
     })
 }
@@ -222,21 +240,25 @@ function displayPublishedBooks(publishedBooks) {
  * Skapar ett bokkort för varje bok.
  * @param {Object} book - Ett bokobjekt
  * @param {Object} book.volumeInfo - Information om bok
+ * @param {Object} book.volumeInfo.imageLinks
+ * @param {string} book.volumeInfo.imageLinks.thumbnail - Bokomslag
  * @param {string} book.volumeInfo.title - Titel
  * @param {string[]} book.volumeInfo.authors - Författare
  * @param {string} book.volumeInfo.publishedDate - Publiceringsdatum
+ * @param {number} book.volumeInfo.pageCount - Antal sidor
  * @param {string} book.volumeInfo.infoLink - Länk till bok
+ * @param {Object[]} savedBooks - sparade böcker från localStorage
  * @returns {HTMLDivElement} - Ett bokkort
  */
-function createBookCard(book) {
-    let savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
+function createBookCard(book, savedBooks) {
     const bookExists = savedBooks.some(savedBook => savedBook.title === book.volumeInfo.title);
 
     const bookCard = document.createElement("div");
     bookCard.classList.add("book-card");
 
     const bookImgEl = document.createElement("img")
-    bookImgEl.src = book.volumeInfo.imageLinks?.thumbnail.replace("http://", "https://");
+    // Ändrar från http till https för säkrare anslutning
+    bookImgEl.src = book.volumeInfo.imageLinks.thumbnail.replace("http://", "https://");
 
     const bookInfoEl = document.createElement("div");
     bookInfoEl.classList.add("book-info");
@@ -306,6 +328,7 @@ function saveBookCard(book) {
 
     let bookExists = savedBooks.some(savedBook => savedBook.title === bookData.title);
 
+    // Kontrollerar så att boken inte redan finns sparad
     if (bookExists === false) {
         savedBooks.unshift(bookData);
         localStorage.setItem("bookData", JSON.stringify(savedBooks));
@@ -321,11 +344,12 @@ function displaySavedBooks() {
 
     let savedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
 
+    // Göm sektionen när inga sparade böcker finns kvar
     if (savedBooks.length === 0) {
-        savedBooksSection.classList.add("hidden");
+        savedBooksSection.parentElement.classList.add("hidden");
         return;
     }
-    savedBooksSection.classList.remove("hidden");
+    savedBooksSection.parentElement.classList.remove("hidden");
 
     const savedBooksHeaderEl = document.createElement("h2");
     savedBooksHeaderEl.textContent = `Want to Read`;
@@ -380,13 +404,17 @@ function createSavedBookCard(book) {
     deleteBtnEl.classList.add("btn", "delete-btn");
     savedCardHeaderEl.appendChild(deleteBtnEl);
 
+    // Ta bort en sparad bok från localStorage, visa böcker som finns kvar och rendera eventuellt sökresultat på nytt
     deleteBtnEl.addEventListener("click", function () {
         let updatedSavedBooks = JSON.parse(localStorage.getItem("bookData")) || [];
         updatedSavedBooks = updatedSavedBooks.filter(savedBook => savedBook.title !== book.title);
-        localStorage.setItem("bookData", JSON.stringify(updatedSavedBooks))
+        localStorage.setItem("bookData", JSON.stringify(updatedSavedBooks));
 
         displaySavedBooks();
-        sortBooks(currentBooks);
+        // Kontrollerar om någon sökning är aktiv, i så fall uppdatera sökresultatet
+        if (hasSearched) {
+            sortBooks(currentBooks);
+        }
     })
     return savedCard;
 }

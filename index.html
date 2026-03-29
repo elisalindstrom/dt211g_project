@@ -35,41 +35,42 @@
 
           <div class="search-section">
             <!-- Search -->
-            <div id="search-message"></div>
             <form id="search-form" autocomplete="off">
               <input id="author-input" type="text" placeholder="Search by Author..." minlength="1" required>
               <button id="submit-btn" class="btn search-btn" type="submit">Search</button>
             </form>
           </div>
 
-          <div class="saved-books">
+          <div class="saved-books hidden">
             <!-- Saved books -->
-            <div id="saved-card" class="hidden">
+            <div id="saved-card">
             </div>
           </div>
-
-          <div class="author-section">
+          
+          <div class="author-section hidden">
             <!-- Author profile -->
-            <div id="author-info-card" class="hidden">
+            <div id="author-info-card">
             </div>
           </div>
 
           <div id="loader" class="spinner hidden"></div>
 
-          <div class="card-section">
+          <div class="card-section hidden">
             <!-- Upcoming releases -->
-            <div id="upcoming-books" class="hidden">
+            <div id="upcoming-books">
             </div>
           </div>
 
-          <div class="card-section">
+          <div class="card-section hidden">
             <!-- Published books -->
-            <div id="published-books" class="hidden">
+            <div id="published-books">
             </div>
           </div>
         </section>
       </main>
-
+      <footer>
+        <p>© NextTBR 2026</p>
+      </footer>
     </div>
   </div>
   <script type="module" src="/src/js/main.js"></script>
