@@ -22,6 +22,9 @@ searchForm.addEventListener("submit", searchAuthor);
 function searchAuthor(event) {
     event.preventDefault();
 
+    // Visa loader
+    loader.classList.remove("hidden");
+
     // Rensar alla tidigare fält
     authorProfile.innerHTML = "";
     upcomingSection.innerHTML = "";
@@ -57,6 +60,9 @@ async function fetchAuthor(authorValue) {
 function displayAuthorNotFound() {
     // Sökning avslutad
     hasSearched = false;
+
+    // Göm loader
+    loader.classList.add("hidden");
 
     authorProfile.parentElement.classList.remove("hidden");
 
@@ -127,8 +133,6 @@ function displayAuthor(author) {
  * @param {string} authorName - Författarnamn
  */
 async function fetchBooks(authorName) {
-    loader.classList.remove("hidden");
-
     try {
         const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=inauthor:${authorName}&printType=books&maxResults=20&key=${API_KEY}`);
         const books = await response.json();
@@ -140,6 +144,7 @@ async function fetchBooks(authorName) {
     } catch (error) {
         console.error("Something went wrong:", error);
     } finally {
+        // Göm loader
         loader.classList.add("hidden");
     }
 }
