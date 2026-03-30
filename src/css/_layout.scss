@@ -1,5 +1,8 @@
 @use "base";
 @use "keyframes";
+@use "sass:color";
+
+$search-btn-color: #96415E;
 
 .container {
     width: 100%;
@@ -77,7 +80,8 @@ footer {
     .search-btn {
         font-size: 16px;
         font-weight: 600;
-        background: linear-gradient(80deg, #d8a7bd 25%, #d181a1 50%, #96415E 75%, #8f3457 100%);
+        background: linear-gradient(50deg, color.scale($search-btn-color, $lightness: 19%) 13%, $search-btn-color 33%,
+                color.scale($search-btn-color, $lightness: -20%) 69%, color.scale($search-btn-color, $lightness: -47%) 100%);
         color: base.$background-color;
     }
 }
@@ -143,6 +147,7 @@ footer {
 
             &:disabled {
                 background-color: #E1DCD7;
+                color: #000000;
                 opacity: 0.7;
                 cursor: auto;
 
@@ -173,7 +178,7 @@ footer {
 
         .delete-btn {
             background-color: #E1DCD7;
-            color: #FFFFFF;
+            color: #000000;
             margin-top: 0.2rem;
         }
     }
